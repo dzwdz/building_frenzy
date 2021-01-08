@@ -6,9 +6,11 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.item.Item;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
 public class BuildingFrenzy implements ClientModInitializer {
@@ -16,10 +18,11 @@ public class BuildingFrenzy implements ClientModInitializer {
 
     public static BlockPos origin;
 
+    // temporary
+    private static boolean wasPressed = false;
+
     @Override
     public void onInitializeClient() {
-        System.out.println("test");
-
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register(new Renderer());
         originBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.building_frenzy.origin",
@@ -28,15 +31,32 @@ public class BuildingFrenzy implements ClientModInitializer {
                 "category.building_frenzy"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (originBind.wasPressed()) {
+            if (client.player == null) return;
+            boolean isPressed = originBind.isPressed();
+            if (!wasPressed && isPressed) {
                 origin = null;
-                if (client.player == null) return;
                 HitResult hit = client.player.raycast(32, client.getTickDelta(), true);
                 if (hit == null) return;
                 if (hit.getType() != HitResult.Type.BLOCK) return;
                 BlockHitResult bhit = (BlockHitResult) hit;
                 origin = bhit.getBlockPos().offset(bhit.getSide());
             }
+            if (wasPressed && !isPressed) {
+                if (origin == null) return;
+                Vec3d v = MathStuff.axisIntersection(MathStuff.BlockPosToVec(origin),
+                            client.player.getCameraPosVec(client.getTickDelta()),
+                            client.player.getRotationVecClient());
+                BlockPos pos = new BlockPos(v);
+                Item active = client.player.getMainHandStack().getItem();
+                String cmd = "/fill "
+                            + origin.getX() + " " + origin.getY() + " " + origin.getZ() + " "
+                            + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " "
+                            + active.toString();
+                System.out.println(cmd);
+                client.player.sendChatMessage(cmd);
+                origin = null;
+            }
+            wasPressed = isPressed;
         });
     }
 }

@@ -31,6 +31,7 @@ public class Renderer implements WorldRenderEvents.DebugRender {
         Vec3d v = MathStuff.axisIntersection(origin, ply.getCameraPosVec(context.tickDelta()), ply.getRotationVecClient());
         DebugRenderer.drawBox(BuildingFrenzy.origin, new BlockPos(v).add(1, 1, 1),  .0f, .0f, 1f, .5f);
 
+
         // copied from VillageDebugRenderer
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
