@@ -7,8 +7,7 @@ import net.minecraft.util.math.Vec3d;
 public class MathStuff {
     // there's probably a builtin method for this but :shrug:
     public static Vec3d BlockPosToVec(BlockPos pos) {
-        return new Vec3d(BuildingFrenzy.origin.getX(), BuildingFrenzy.origin.getY(), BuildingFrenzy.origin.getZ())
-                .add(.5, .5, .5);
+        return new Vec3d(pos.getX(), pos.getY(), pos.getZ()).add(.5, .5, .5);
     }
 
     // adapted from https://stackoverflow.com/questions/5666222/3d-line-plane-intersection
