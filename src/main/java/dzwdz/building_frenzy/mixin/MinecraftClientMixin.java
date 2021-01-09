@@ -1,5 +1,6 @@
 package dzwdz.building_frenzy.mixin;
 
+import dzwdz.building_frenzy.BuildingFrenzy;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
@@ -20,8 +21,8 @@ public class MinecraftClientMixin {
                     target = "Lnet/minecraft/client/options/KeyBinding;isPressed()Z"
             ))
     private boolean isPressedOverride(KeyBinding binding) {
-        if (binding == options.keyAttack
-                || binding == options.keyUse)
+        if (BuildingFrenzy.active_mode.overrideVanilla() &&
+                (binding == options.keyAttack || binding == options.keyUse))
             return false;
         return binding.isPressed();
     }
@@ -33,8 +34,8 @@ public class MinecraftClientMixin {
                     target = "Lnet/minecraft/client/options/KeyBinding;wasPressed()Z"
             ))
     private boolean wasPressedOverride(KeyBinding binding) {
-        if (binding == options.keyAttack
-                || binding == options.keyUse)
+        if (BuildingFrenzy.active_mode.overrideVanilla() &&
+                (binding == options.keyAttack || binding == options.keyUse))
             return false;
         return binding.wasPressed();
     }

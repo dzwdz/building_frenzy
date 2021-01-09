@@ -1,17 +1,19 @@
 package dzwdz.building_frenzy;
 
+import dzwdz.building_frenzy.modes.BuildMode;
+import dzwdz.building_frenzy.modes.PlaneMode;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.Item;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class BuildingFrenzy implements ClientModInitializer {
-    public static BlockPos origin;
+    public static Vec3d origin;
+
+    public static BuildMode active_mode = new PlaneMode();
 
     // temporary
     private static boolean wasPressed = false;
@@ -29,22 +31,16 @@ public class BuildingFrenzy implements ClientModInitializer {
                 if (hit == null) return;
                 if (hit.getType() != HitResult.Type.BLOCK) return;
                 BlockHitResult bhit = (BlockHitResult) hit;
-                origin = bhit.getBlockPos().offset(bhit.getSide());
+                origin = MathStuff.BlockPosToVec(bhit.getBlockPos().offset(bhit.getSide()));
             }
             if (wasPressed && !isPressed) {
-                if (origin == null) return;
-                Vec3d v = MathStuff.axisIntersection(MathStuff.BlockPosToVec(origin),
+                if (origin != null) {
+                    active_mode.finalize(origin,
                             client.player.getCameraPosVec(client.getTickDelta()),
-                            client.player.getRotationVecClient());
-                BlockPos pos = new BlockPos(v);
-                Item active = client.player.getMainHandStack().getItem();
-                String cmd = "/fill "
-                            + origin.getX() + " " + origin.getY() + " " + origin.getZ() + " "
-                            + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " "
-                            + active.toString();
-                System.out.println(cmd);
-                client.player.sendChatMessage(cmd);
-                origin = null;
+                            client.player.getRotationVecClient(),
+                            client.player.getMainHandStack().getItem());
+                    origin = null;
+                }
             }
             wasPressed = isPressed;
         });
