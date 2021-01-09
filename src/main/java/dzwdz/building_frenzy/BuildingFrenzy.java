@@ -38,9 +38,10 @@ public class BuildingFrenzy implements ClientModInitializer {
             if (mode_switcher.wasPressed()) {
                 mode_idx = (mode_idx + 1) % modes.size();
                 if (mode_idx < 0) mode_idx += modes.size();
-                // fixme state staysa
+
                 active_mode.resetState();
                 active_mode = modes.get(mode_idx);
+
                 client.player.sendMessage(new LiteralText(active_mode.getClass().getSimpleName()), true);
             }
             active_mode.clientTick(client);

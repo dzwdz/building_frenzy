@@ -1,18 +1,19 @@
 package dzwdz.building_frenzy.modes;
 
-import dzwdz.building_frenzy.MathStuff;
+import dzwdz.building_frenzy.Util;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class BuildMode {
     public Vec3d origin = null;
-    private boolean wasPressed; // still temporary
+    private KeyBinding currentlyPressed = null;
 
     public boolean overrideVanilla() {
         return true;
@@ -24,30 +25,42 @@ public abstract class BuildMode {
 
     public void clientTick(MinecraftClient client) {
         if (client.player == null) return;
-        boolean isPressed = client.options.keyUse.isPressed();
-        if (!wasPressed && isPressed) {
-            origin = null;
-            HitResult hit = client.player.raycast(64, client.getTickDelta(), true);
-            if (hit == null) return;
-            if (hit.getType() != HitResult.Type.BLOCK) return;
-            BlockHitResult bhit = (BlockHitResult) hit;
-            origin = MathStuff.BlockPosToVec(bhit.getBlockPos().offset(bhit.getSide()));
-        }
-        if (wasPressed && !isPressed) {
+
+        if (currentlyPressed == null) {
+
+            if (client.options.keyAttack.isPressed()) { // block breaking
+                origin = null;
+                BlockHitResult blockHit = Util.eyeTrace(client);
+                if (blockHit != null)
+                    origin = Util.BlockPosToVec(blockHit.getBlockPos());
+                currentlyPressed = client.options.keyAttack;
+            } else if (client.options.keyUse.isPressed()) { // block placing
+                origin = null;
+                BlockHitResult blockHit = Util.eyeTrace(client);
+                if (blockHit != null)
+                    origin = Util.BlockPosToVec(blockHit.getBlockPos().offset(blockHit.getSide()));
+                currentlyPressed = client.options.keyUse;
+            }
+
+        } else if (!currentlyPressed.isPressed()) { // if the currently held button was released
             if (origin != null) {
+                Item item = Items.AIR;
+                if (currentlyPressed == client.options.keyUse)
+                    item = client.player.getMainHandStack().getItem();
+
                 finalize(origin,
                         client.player.getCameraPosVec(client.getTickDelta()),
                         client.player.getRotationVecClient(),
-                        client.player.getMainHandStack().getItem());
+                        item);
                 origin = null;
             }
+            currentlyPressed = null;
         }
-        wasPressed = isPressed;
     }
 
     public void resetState() {
         origin = null;
-        wasPressed = false;
+        currentlyPressed = null;
         GameOptions options = MinecraftClient.getInstance().options;
 
         // avoid ghost clicks

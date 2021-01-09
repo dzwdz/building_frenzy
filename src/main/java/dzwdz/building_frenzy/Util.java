@@ -1,12 +1,16 @@
 package dzwdz.building_frenzy;
 
 import com.google.common.collect.ImmutableSet;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public class MathStuff {
+public class Util {
     // there's probably a builtin method for this but :shrug:
     public static Vec3d BlockPosToVec(BlockPos pos) {
+        if (pos == null) return null;
         return new Vec3d(pos.getX(), pos.getY(), pos.getZ()).add(.5, .5, .5);
     }
 
@@ -21,9 +25,15 @@ public class MathStuff {
         for (Vec3d plane : ImmutableSet.of(new Vec3d(1, 0, 0), new Vec3d(0, 1, 0), new Vec3d(0, 0, 1),
                                            new Vec3d(-1, 0, 0), new Vec3d(0, -1, 0), new Vec3d(0, 0, -1))) {
             double t = lineIntersection(origin, plane, from, direction);
-            if (0 < t && t < closest) closest = t;
+            if (1 < t && t < closest) closest = t; // todo make the min distance configurable
         }
 
         return from.add(direction.multiply(closest));
+    }
+
+    public static BlockHitResult eyeTrace(MinecraftClient client) {
+        HitResult hit = client.player.raycast(64, client.getTickDelta(), true);
+        if (hit == null || hit.getType() != HitResult.Type.BLOCK) return null;
+        return (BlockHitResult) hit;
     }
 }
