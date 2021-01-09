@@ -21,7 +21,7 @@ public class MinecraftClientMixin {
                     target = "Lnet/minecraft/client/options/KeyBinding;isPressed()Z"
             ))
     private boolean isPressedOverride(KeyBinding binding) {
-        if (BuildingFrenzy.active_mode.overrideVanilla() &&
+        if (BuildingFrenzy.active_mode.overridesVanilla() &&
                 (binding == options.keyAttack || binding == options.keyUse))
             return false;
         return binding.isPressed();
@@ -34,7 +34,7 @@ public class MinecraftClientMixin {
                     target = "Lnet/minecraft/client/options/KeyBinding;wasPressed()Z"
             ))
     private boolean wasPressedOverride(KeyBinding binding) {
-        if (BuildingFrenzy.active_mode.overrideVanilla() &&
+        if (BuildingFrenzy.active_mode.overridesVanilla() &&
                 (binding == options.keyAttack || binding == options.keyUse))
             return false;
         return binding.wasPressed();

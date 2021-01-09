@@ -17,7 +17,7 @@ public class PlaneMode extends BuildMode {
     public void render(WorldRenderContext context, ClientPlayerEntity ply) {
         if (origin == null) return;
 
-        Vec3d hit = Util.axisIntersection(origin, ply.getCameraPosVec(context.tickDelta()), ply.getRotationVecClient());
+        Vec3d hit = Util.axisIntersection(origin, ply.getCameraPosVec(context.tickDelta()), ply.getRotationVecClient(), depth);
         hit = Util.BlockPosToVec(new BlockPos(hit)); // rounding the vector, todo make this less ugly
         Box box = new Box(origin, hit).expand(.5);
 
@@ -32,7 +32,7 @@ public class PlaneMode extends BuildMode {
 
     @Override
     public void finalize(Vec3d origin, Vec3d player, Vec3d direction, Item item) {
-        Vec3d v = Util.axisIntersection(origin, player, direction);
+        Vec3d v = Util.axisIntersection(origin, player, direction, depth);
         String cmd = "/fill " + vecString(origin) + vecString(v) + item.toString();
         //System.out.println(cmd);
         MinecraftClient.getInstance().player.sendChatMessage(cmd);

@@ -20,15 +20,25 @@ public class Util {
     }
 
     public static Vec3d axisIntersection(Vec3d origin, Vec3d from, Vec3d direction) {
+        return axisIntersection(origin, from, direction, 0);
+    }
+
+    public static Vec3d axisIntersection(Vec3d origin, Vec3d from, Vec3d direction, double depth) {
         double closest = Double.POSITIVE_INFINITY;
+        Vec3d closest_plane = null;
 
         for (Vec3d plane : ImmutableSet.of(new Vec3d(1, 0, 0), new Vec3d(0, 1, 0), new Vec3d(0, 0, 1),
-                                           new Vec3d(-1, 0, 0), new Vec3d(0, -1, 0), new Vec3d(0, 0, -1))) {
+                new Vec3d(-1, 0, 0), new Vec3d(0, -1, 0), new Vec3d(0, 0, -1))) {
             double t = lineIntersection(origin, plane, from, direction);
-            if (1 < t && t < closest) closest = t; // todo make the min distance configurable
+            if (1 < t && t < closest) { // todo make the min distance configurable
+                closest = t;
+                closest_plane = plane;
+            }
         }
 
-        return from.add(direction.multiply(closest));
+        assert closest_plane != null;
+
+        return from.add(direction.multiply(closest)).add(closest_plane.multiply(depth)); // fixme the depth direction isn't consistent when the player rotates
     }
 
     public static BlockHitResult eyeTrace(MinecraftClient client) {

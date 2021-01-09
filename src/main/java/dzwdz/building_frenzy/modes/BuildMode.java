@@ -13,9 +13,10 @@ import net.minecraft.util.math.Vec3d;
 
 public abstract class BuildMode {
     public Vec3d origin = null;
-    private KeyBinding currentlyPressed = null;
+    protected KeyBinding currentlyPressed = null;
+    protected double depth = 0;
 
-    public boolean overrideVanilla() {
+    public boolean overridesVanilla() {
         return true;
     }
 
@@ -34,12 +35,14 @@ public abstract class BuildMode {
                 if (blockHit != null)
                     origin = Util.BlockPosToVec(blockHit.getBlockPos());
                 currentlyPressed = client.options.keyAttack;
+                depth = 0;
             } else if (client.options.keyUse.isPressed()) { // block placing
                 origin = null;
                 BlockHitResult blockHit = Util.eyeTrace(client);
                 if (blockHit != null)
                     origin = Util.BlockPosToVec(blockHit.getBlockPos().offset(blockHit.getSide()));
                 currentlyPressed = client.options.keyUse;
+                depth = 0;
             }
 
         } else if (!currentlyPressed.isPressed()) { // if the currently held button was released
@@ -61,10 +64,19 @@ public abstract class BuildMode {
     public void resetState() {
         origin = null;
         currentlyPressed = null;
-        GameOptions options = MinecraftClient.getInstance().options;
+        depth = 0;
 
         // avoid ghost clicks
+        GameOptions options = MinecraftClient.getInstance().options;
         while (options.keyUse.wasPressed());
         while (options.keyAttack.wasPressed());
+    }
+
+    public boolean onScroll(double amt) {
+        if (origin != null) {
+            depth += amt;
+            return true;
+        }
+        return false;
     }
 }

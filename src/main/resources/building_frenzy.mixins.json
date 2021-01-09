@@ -4,7 +4,8 @@
   "package": "dzwdz.building_frenzy.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "MinecraftClientMixin"
+    "MinecraftClientMixin",
+    "MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
