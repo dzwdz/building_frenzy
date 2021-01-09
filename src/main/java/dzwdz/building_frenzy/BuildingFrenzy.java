@@ -2,20 +2,15 @@ package dzwdz.building_frenzy;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import org.lwjgl.glfw.GLFW;
 
 public class BuildingFrenzy implements ClientModInitializer {
-    private static KeyBinding originBind;
-
     public static BlockPos origin;
 
     // temporary
@@ -24,15 +19,10 @@ public class BuildingFrenzy implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register(new Renderer());
-        originBind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.building_frenzy.origin",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_O,
-                "category.building_frenzy"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
-            boolean isPressed = originBind.isPressed();
+            boolean isPressed = MinecraftClient.getInstance().options.keyUse.isPressed();
             if (!wasPressed && isPressed) {
                 origin = null;
                 HitResult hit = client.player.raycast(32, client.getTickDelta(), true);
