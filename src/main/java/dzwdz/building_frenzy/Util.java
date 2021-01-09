@@ -38,7 +38,9 @@ public class Util {
 
         assert closest_plane != null;
 
-        return from.add(direction.multiply(closest)).add(closest_plane.multiply(depth)); // fixme the depth direction isn't consistent when the player rotates
+        return from.add(direction.multiply(closest)).add(
+                closest_plane.multiply(direction).normalize().multiply(depth)
+        );
     }
 
     public static BlockHitResult eyeTrace(MinecraftClient client) {

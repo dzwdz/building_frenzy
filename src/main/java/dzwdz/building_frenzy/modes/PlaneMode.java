@@ -18,7 +18,7 @@ public class PlaneMode extends BuildMode {
         if (origin == null) return;
 
         Vec3d hit = Util.axisIntersection(origin, ply.getCameraPosVec(context.tickDelta()), ply.getRotationVecClient(), depth);
-        hit = Util.BlockPosToVec(new BlockPos(hit)); // rounding the vector, todo make this less ugly
+        hit = Util.BlockPosToVec(new BlockPos(hit)); // rounding the vector
         Box box = new Box(origin, hit).expand(.5);
 
         box = box.offset(ply.getCameraPosVec(context.tickDelta()).negate());
