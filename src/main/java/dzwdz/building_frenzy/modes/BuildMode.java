@@ -8,6 +8,8 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.Vec3d;
 
@@ -78,5 +80,9 @@ public abstract class BuildMode {
             return true;
         }
         return false;
+    }
+
+    public Text getName() {
+        return new LiteralText(getClass().getSimpleName());
     }
 }

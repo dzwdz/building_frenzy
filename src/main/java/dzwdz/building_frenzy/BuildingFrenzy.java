@@ -7,10 +7,11 @@ import dzwdz.building_frenzy.modes.PlaneMode;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.LiteralText;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -41,10 +42,15 @@ public class BuildingFrenzy implements ClientModInitializer {
 
                 active_mode.resetState();
                 active_mode = modes.get(mode_idx);
-
-                client.player.sendMessage(new LiteralText(active_mode.getClass().getSimpleName()), true);
             }
             active_mode.clientTick(client);
+        });
+
+        HudRenderCallback.EVENT.register((matrices, delta) -> {
+            MinecraftClient.getInstance().textRenderer.drawWithShadow(
+                    matrices,
+                    active_mode.getName(),
+                    1, 1, 0xFFFFFFFF);
         });
     }
 }
