@@ -1,6 +1,5 @@
 package dzwdz.building_frenzy.modes;
 
-import dzwdz.building_frenzy.BuildingFrenzy;
 import dzwdz.building_frenzy.MathStuff;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
@@ -16,8 +15,7 @@ import static net.minecraft.util.math.MathHelper.floor;
 public class PlaneMode extends BuildMode {
     @Override
     public void render(WorldRenderContext context, ClientPlayerEntity ply) {
-        if (BuildingFrenzy.origin == null) return;
-        Vec3d origin = BuildingFrenzy.origin;
+        if (origin == null) return;
 
         Vec3d hit = MathStuff.axisIntersection(origin, ply.getCameraPosVec(context.tickDelta()), ply.getRotationVecClient());
         hit = MathStuff.BlockPosToVec(new BlockPos(hit)); // rounding the vector, todo make this less ugly
